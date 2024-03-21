@@ -25,10 +25,20 @@ class HelloController extends Controller
      * @param string $message the message to be echoed.
      * @return int Exit code
      */
-    public function actionIndex($message = 'hello world')
+    public $message;
+    
+    public function options($actionID)
     {
-        echo $message . "\n";
-
-        return ExitCode::OK;
+        return ['message'];
+    }
+    
+    public function optionAliases()
+    {
+        return ['m' => 'message'];
+    }
+    
+    public function actionIndex()
+    {
+        echo $this->message . "\n";
     }
 }

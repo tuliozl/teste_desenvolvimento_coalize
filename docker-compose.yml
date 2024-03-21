@@ -1,28 +1,20 @@
-version: "2"
+version: '2'
 services:
-    web:
-      # image: webdevops/php-apache:7.1-alpine
-      build:
-        context: .
-        dockerfile: Dockerfile
-      working_dir: /app
-      ports:
-        - "80:80"
-      volumes:
-        - ./www:/app
-    db:
-        image: mysql
-        ports: 
-            - "3306:3306"
-        environment:
-            MYSQL_DATABASE: myDb
-            MYSQL_USER: user
-            MYSQL_PASSWORD: test
-            MYSQL_ROOT_PASSWORD: test
-        volumes:
-            - ./dump:/docker-entrypoint-initdb.d
-            - persistent:/var/lib/mysql
-        networks:
-            - default
-volumes:
-    persistent:
+  php:
+    image: yiisoftware/yii2-php:7.4-apache
+    volumes:
+      - ~/.composer-docker/cache:/root/.composer/cache:delegated
+      - ./:/app:delegated
+    ports:
+      - '80:80'
+  db:
+      image: mysql
+      ports: 
+          - "3306:3306"
+      environment:
+          MYSQL_DATABASE: myDb
+          MYSQL_USER: user
+          MYSQL_PASSWORD: test
+          MYSQL_ROOT_PASSWORD: test
+      networks:
+          - default
