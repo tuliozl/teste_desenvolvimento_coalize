@@ -35,19 +35,25 @@ class CreateuserController extends Controller
     
     public function actionIndex()
     {   
-        $user = new User();
-        $user->username = $this->username;
-        $user->firstname = $this->firstname;
-        $user->password = \Yii::$app->security->generatePasswordHash($this->password);
-        $user->save();
-        
-        echo "USUÁRIO: ".$this->username . " SALVO COM SUCESSO!\n";
+        try{
+            $user = new User();
+            $user->username = $this->username;
+            $user->firstname = $this->firstname;
+            $user->password = \Yii::$app->security->generatePasswordHash($this->password);
+            $user->save();
+            
+            echo "USUÁRIO: ".$this->username . " SALVO COM SUCESSO!\n";
+
+        } catch( \Throwable $t ) {
+			
+			echo "ERRO: ".$t->getMessage().PHP_EOL;
+         
+		} catch (\Exception $e) {
+
+            echo "ERRO: ".$e->getMessage().PHP_EOL;
+
+        }
     }
 
-    /*
-     public function validatePassword($password)
-    {
-        return Yii::$app->getSecurity()->validatePassword($password, $this->password_hash);
-    }
-    */
+    
 }
