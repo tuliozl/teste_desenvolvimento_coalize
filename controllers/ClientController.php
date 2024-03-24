@@ -4,6 +4,8 @@ namespace app\controllers;
 use yii\rest\ActiveController;
 use yii\filters\auth\CompositeAuth;
 use yii\filters\auth\HttpBearerAuth;
+use yii\data\Pagination;
+
 use app\models\Client;
 use \Exception;
 use \Throwable;
@@ -13,6 +15,9 @@ class ClientController extends ActiveController
    public $modelClass = 'app\models\Client';
    public $response = array();
 
+   /**
+    * stores a new client
+    */
    public function actionStore(){
 
         try{
@@ -64,14 +69,53 @@ class ClientController extends ActiveController
         }
 
         return $this->response;
-
-
-    /*
-move_uploaded_file($this->file, $targetPath);
-*/
-    
-    // return array("form" => $_POST, "file" => $_FILES, "valido" => $this->validateCPF($_POST["cpf"]));
    }
+
+   /**
+    * lists active clients
+    */
+   public function actionList(){
+
+    try{
+
+        $pageSize = (isset($_GET["size"]) && $_GET["size"] != "") ? $_GET["size"] : 5;
+        $page = (isset($_GET["page"]) && $_GET["page"] != "") ? $_GET["page"] : 0;
+
+        $query = Client::find()->where(['deleted_at' => null])->orderBy(['created_at' => SORT_DESC,'name' => SORT_ASC]);
+        $count = $query->count();
+        
+        $pagination = new Pagination(['totalCount' => $count, 'defaultPageSize' => $pageSize]);
+        $pagination->setPage($page);
+        
+        $clients = $query->offset($pagination->offset)->limit($pagination->limit)->all();
+
+        $this->response = array(
+            "httpCode" => 200,
+            "status" => "success",
+            "total" => $count,
+            "client" => $clients
+        );
+
+    } catch( Throwable $t ) {
+        
+        $this->response = array(
+            "httpCode" => 400,
+            "status" => "error",
+            "message" => $t->getMessage()
+        );
+     
+    } catch (Exception $e) {
+
+        $this->response = array(
+            "httpCode" => 400,
+            "status" => "error",
+            "message" => $e->getMessage()
+        );
+
+    }
+
+    return $this->response;
+}
 
    /**
     * checks and validates input data to record new client

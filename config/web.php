@@ -68,6 +68,7 @@ $config = [
                     'controller' => 'client',
                     'extraPatterns' => [
                         'POST /' => 'store',
+                        'GET /' => 'list',
                     ],
                 ],
             ],
