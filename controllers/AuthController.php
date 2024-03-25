@@ -64,7 +64,6 @@ class AuthController extends ActiveController
             }
         }
         return $response;
-        // return array('msg' => "TESTANDO","status" => "xola");
     }
    
 }

@@ -6,17 +6,17 @@ use yii\filters\auth\CompositeAuth;
 use yii\filters\auth\HttpBearerAuth;
 use yii\data\Pagination;
 
-use app\models\Client;
+use app\models\Product;
 use \Exception;
 use \Throwable;
 
-class ClientController extends ActiveController
+class ProductController extends ActiveController
 {
-   public $modelClass = 'app\models\Client';
+   public $modelClass = 'app\models\Product';
    public $response = array();
 
    /**
-    * stores a new client
+    * stores a new product
     */
    public function actionStore(){
 
@@ -30,24 +30,17 @@ class ClientController extends ActiveController
             
             move_uploaded_file($_FILES["photo"]["tmp_name"], $new_file);
 
-            $client = new Client;
-            $client->name = $_POST["name"];
-            $client->cpf = $_POST["cpf"];
-            $client->address = $_POST["address"];
-            $client->number = $_POST["number"];
-            $client->complement = isset($_POST["complement"]) ? $_POST["complement"] : null;
-            $client->district = $_POST["district"];
-            $client->city = $_POST["city"];
-            $client->state = $_POST["state"];
-            $client->zipcode = $_POST["zipcode"];
-            $client->gender = $_POST["gender"];
-            $client->photo = $new_file;
-            $client->save();
+            $product = new Product;
+            $product->name = $_POST["name"];
+            $product->client_id = $_POST["client_id"];
+            $product->price = $_POST["price"];
+            $product->photo = $new_file;
+            $product->save();
 
             $this->response = array(
                 "httpCode" => 200,
                 "status" => "success",
-                "client" => $client
+                "product" => $product
             );
 
         } catch( Throwable $t ) {
@@ -72,7 +65,7 @@ class ClientController extends ActiveController
    }
 
    /**
-    * lists active clients
+    * lists active products
     */
    public function actionList(){
 
@@ -81,8 +74,13 @@ class ClientController extends ActiveController
             $pageSize = (isset($_GET["size"]) && $_GET["size"] != "") ? $_GET["size"] : 5;
             $page = (isset($_GET["page"]) && $_GET["page"] != "") ? $_GET["page"] : 0;
 
-            $query = Client::find()
-                        ->where(['deleted_at' => null])
+            $whereClause['deleted_at'] = null;
+            if(isset($_GET["client"]) && $_GET["client"] != ""){
+                $whereClause['client_id'] = $_GET["client"];
+            }
+
+            $query = Product::find()
+                        ->where($whereClause)
                         ->orderBy(['created_at' => SORT_DESC,'name' => SORT_ASC]);
 
             $count = $query->count();
@@ -90,7 +88,7 @@ class ClientController extends ActiveController
             $pagination = new Pagination(['totalCount' => $count, 'defaultPageSize' => $pageSize]);
             $pagination->setPage($page);
             
-            $clients = $query
+            $products = $query
                         ->offset($pagination->offset)
                         ->limit($pagination->limit)
                         ->all();
@@ -100,7 +98,7 @@ class ClientController extends ActiveController
                 "status" => "success",
                 "total" => (int)$count,
                 "totalPages" => ceil($count / $pageSize),
-                "client" => $clients
+                "product" => $products
             );
 
         } catch( Throwable $t ) {
@@ -127,7 +125,7 @@ class ClientController extends ActiveController
 
     
     /**
-    * updates client data
+    * updates product data
     */
     public function actionEdit($id){
         try{
@@ -142,27 +140,20 @@ class ClientController extends ActiveController
                 move_uploaded_file($_FILES["photo"]["tmp_name"], $new_file);
             }
 
-            $client = Client::findOne($id);
-            $client->name = $_POST["name"];
-            $client->cpf = $_POST["cpf"];
-            $client->address = $_POST["address"];
-            $client->number = $_POST["number"];
-            $client->complement = isset($_POST["complement"]) ? $_POST["complement"] : null;
-            $client->district = $_POST["district"];
-            $client->city = $_POST["city"];
-            $client->state = $_POST["state"];
-            $client->zipcode = $_POST["zipcode"];
-            $client->gender = $_POST["gender"];
+            $product = Product::findOne($id);
+            $product->name = $_POST["name"];
+            $product->client_id = $_POST["client_id"];
+            $product->price = $_POST["price"];
             if(isset($_FILES["photo"])){
-                $client->photo = $new_file;
+                $product->photo = $new_file;
             }
-            $client->last_edit_at = date("Y-m-d H:i:s");
-            $client->save();
+            $product->last_edit_at = date("Y-m-d H:i:s");
+            $product->save();
 
             $this->response = array(
                 "httpCode" => 200,
                 "status" => "success",
-                "client" => $client
+                "product" => $product
             );
 
         } catch( Throwable $t ) {
@@ -188,19 +179,19 @@ class ClientController extends ActiveController
 
 
     /**
-    * deletes a client
+    * deletes a product
     */
     public function actionSoftdelete($id){
         try{
 
-            $client = Client::findOne($id);
-            $client->deleted_at = date("Y-m-d H:i:s");
-            $client->save();
+            $product = Product::findOne($id);
+            $product->deleted_at = date("Y-m-d H:i:s");
+            $product->save();
 
             $this->response = array(
                 "httpCode" => 200,
                 "status" => "success",
-                "client" => $client
+                "product" => $product
             );
 
         } catch( Throwable $t ) {
@@ -225,7 +216,7 @@ class ClientController extends ActiveController
     }
 
    /**
-    * checks and validates input data to record new client
+    * checks and validates input data to record new / update product 
     */
    public function validateInputData($update=false){
 
@@ -237,73 +228,16 @@ class ClientController extends ActiveController
             throw new Exception('É necessário informar um nome.');
         }
 
-        if(!isset($_POST["cpf"]) || is_null($_POST["cpf"]) || $_POST["cpf"] == ""){
-            throw new Exception('É necessário informar um CPF.');
+        if(!isset($_POST["price"]) || is_null($_POST["price"]) || $_POST["price"] == ""){
+            throw new Exception('É necessário informar um preço.');
         }
 
-        if(!isset($_POST["address"]) || is_null($_POST["address"]) || $_POST["address"] == ""){
-            throw new Exception('É necessário informar um endereço.');
+        if(!isset($_POST["client_id"]) || is_null($_POST["client_id"]) || $_POST["client_id"] == ""){
+            throw new Exception('É necessário informar o cliente.');
         }
-
-        if(!isset($_POST["number"]) || is_null($_POST["number"]) || $_POST["number"] == ""){
-            throw new Exception('É necessário informar um número.');
-        }
-
-        if(!isset($_POST["district"]) || is_null($_POST["district"]) || $_POST["district"] == ""){
-            throw new Exception('É necessário informar um bairro.');
-        }
-
-        if(!isset($_POST["city"]) || is_null($_POST["city"]) || $_POST["city"] == ""){
-            throw new Exception('É necessário informar uma cidade.');
-        }
-
-        if(!isset($_POST["state"]) || is_null($_POST["state"]) || $_POST["state"] == ""){
-            throw new Exception('É necessário informar um estado.');
-        }
-
-        if(!isset($_POST["zipcode"]) || is_null($_POST["zipcode"]) || $_POST["zipcode"] == ""){
-            throw new Exception('É necessário informar o CEP.');
-        }
-
-        if(!isset($_POST["gender"]) || is_null($_POST["gender"]) || $_POST["gender"] == ""){
-            throw new Exception('É necessário informar o sexo.');
-        }
-
-        if(!in_array($_POST["gender"],array("F","M"))){
-            throw new Exception('O sexo informado não é válido.');
-        }
-
-        $this->validateCPF($_POST["cpf"]);
 
    }
    
-   
-   /**
-    * validate CPF string
-    */
-   public function validateCPF($cpf) {
-
-        $cpf = preg_replace( '/[^0-9]/is', '', $cpf );
-
-        if (strlen($cpf) != 11) {
-            throw new Exception('CPF inválido: quantidade de dígitos incorreta.');
-        }
-
-        if (preg_match('/(\d)\1{10}/', $cpf)) {
-            throw new Exception('CPF inválido: dígitos repetidos.');
-        }
-        for ($t = 9; $t < 11; $t++) {
-            for ($d = 0, $c = 0; $c < $t; $c++) {
-                $d += $cpf[$c] * (($t + 1) - $c);
-            }
-            $d = ((10 * $d) % 11) % 10;
-            if ($cpf[$c] != $d) {
-                throw new Exception('CPF inválido.');
-            }
-        }
-        return true;
-    }
-
    public function behaviors()
     {
     $behaviors = parent::behaviors();

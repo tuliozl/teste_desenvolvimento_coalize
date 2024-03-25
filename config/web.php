@@ -69,6 +69,18 @@ $config = [
                     'extraPatterns' => [
                         'POST /' => 'store',
                         'GET /' => 'list',
+                        'POST {id}' => 'edit',
+                        'DELETE {id}' => 'softdelete',
+                    ],
+                ],
+                [
+                    'class' => 'yii\rest\UrlRule', 
+                    'controller' => 'product',
+                    'extraPatterns' => [
+                        'POST /' => 'store',
+                        'GET /' => 'list',
+                        'POST {id}' => 'edit',
+                        'DELETE {id}' => 'softdelete',
                     ],
                 ],
             ],
