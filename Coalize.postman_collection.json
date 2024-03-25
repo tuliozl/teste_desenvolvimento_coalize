@@ -56,13 +56,7 @@
 						"header": [],
 						"body": {
 							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "page",
-									"value": "0",
-									"type": "text"
-								}
-							]
+							"formdata": []
 						},
 						"url": {
 							"raw": "http://127.0.0.1/clients?page=0&size=2",
@@ -106,13 +100,7 @@
 						"header": [],
 						"body": {
 							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "page",
-									"value": "0",
-									"type": "text"
-								}
-							]
+							"formdata": []
 						},
 						"url": "http://127.0.0.1/clients/9"
 					},
@@ -498,23 +486,7 @@
 									"    pm.response.to.have.status(200);",
 									"    var res = pm.response.json();",
 									"    pm.environment.set(\"access_token\", res.data.access_token);",
-									"});",
-									"",
-									"",
-									"/*",
-									"pm.response.to.have.status(200,function(response){",
-									"    pm.environment.set('access_token',response.data.access_token);",
-									"})",
-									"",
-									"pm.sendRequest({",
-									"\turl: 'http://192.168.0.10/o_queridao_back/public/sanctum/csrf-cookie',",
-									"\tmethod: 'GET'",
-									"}, function (error, response, {cookies}) {",
-									"    if(!error){",
-									"    \tpm.environment.set('xsrf-token', cookies.get('XSRF-TOKEN'));",
-									"    }",
-									"});*/",
-									""
+									"});"
 								],
 								"type": "text/javascript",
 								"packages": {}
