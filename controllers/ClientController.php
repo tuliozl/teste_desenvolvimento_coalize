@@ -41,7 +41,7 @@ class ClientController extends ActiveController
             $client->state = $_POST["state"];
             $client->zipcode = $_POST["zipcode"];
             $client->gender = $_POST["gender"];
-            $client->photo = $new_file;
+            $client->photo = $file_name;
             $client->save();
 
             $this->response = array(
@@ -154,7 +154,7 @@ class ClientController extends ActiveController
             $client->zipcode = $_POST["zipcode"];
             $client->gender = $_POST["gender"];
             if(isset($_FILES["photo"])){
-                $client->photo = $new_file;
+                $client->photo = $file_name;
             }
             $client->last_edit_at = date("Y-m-d H:i:s");
             $client->save();

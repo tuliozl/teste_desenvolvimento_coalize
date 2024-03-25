@@ -34,7 +34,7 @@ class ProductController extends ActiveController
             $product->name = $_POST["name"];
             $product->client_id = $_POST["client_id"];
             $product->price = $_POST["price"];
-            $product->photo = $new_file;
+            $product->photo = $file_name;
             $product->save();
 
             $this->response = array(
@@ -145,7 +145,7 @@ class ProductController extends ActiveController
             $product->client_id = $_POST["client_id"];
             $product->price = $_POST["price"];
             if(isset($_FILES["photo"])){
-                $product->photo = $new_file;
+                $product->photo = $file_name;
             }
             $product->last_edit_at = date("Y-m-d H:i:s");
             $product->save();
