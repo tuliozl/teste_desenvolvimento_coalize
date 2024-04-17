@@ -42,7 +42,7 @@ docker-compose run --rm php yii createuser -u=tulio -f=Tulio -p=123mudar
 ```
 
 ### Consumindo as APIs
-No reposiório eu disponibilizei um arquicom com as *collections* e um *environment* para execução de testes. Na *environment* há apenas a variável *access_token* que será preenchida automaticamente com o *Bearer token* após a autenticação. Todas as cosultas da *collection* que exigem autenticação já estão configuradas para exibir a variável ```{{access_token}}``` na aba Auth.
+No reposiório eu disponibilizei um arquivo com com as *collections* e um *environment* para execução de testes. Na *environment* há apenas a variável *access_token* que será preenchida automaticamente com o *Bearer token* após a autenticação. Todas as cosultas da *collection* que exigem autenticação já estão configuradas para exibir a variável ```{{access_token}}``` na aba Auth.
 
 ##### Autenticação
 ```POST http://127.0.0.1/auths/login``` enviando *username* e *password*. Retorna status e access_token.
